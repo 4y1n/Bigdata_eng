@@ -1,0 +1,26 @@
+{
+  "run_mode": "local",
+  "cluster": {
+    "bootstrap_servers": "YOUR_KAFKA_BROKER:9092",
+    "spark_master_url": "spark://YOUR_SPARK_MASTER:7077",
+    "spark_driver_host": "YOUR_DRIVER_IP"
+  },
+  "kafka": {
+    "security_protocol": "PLAINTEXT",
+    "sasl_mechanism": "PLAIN",
+    "auth": {
+      "user": null,
+      "secret": null
+    },
+    "group_id": "s4-kafka-spark-consumer",
+    "checkpoint_dir": "/tmp/s4_kafka_spark_checkpoint"
+  },
+  "spark": {
+    "cores_max": "4",
+    "executor_cores": "1",
+    "executor_memory": "1g",
+    "shuffle_partitions": "8",
+    "driver_port": "38559",
+    "blockmanager_port": "38600"
+  }
+}

@@ -1,11 +1,40 @@
 services:
+  # Base environment for the Spark notebooks.
+  # Start with: docker compose up spark
   spark:
     image: jupyter/pyspark-notebook:latest
+    container_name: bigdata_spark
     ports:
       - "8888:8888"
+      - "4040:4040"
     volumes:
-      - ./notebooks:/home/jovyan/work
+      - ./:/home/jovyan/work
+    working_dir: /home/jovyan/work
     environment:
-      - JUPYTER_ENABLE_LAB=yes
-    command: start-notebook.sh --ServerApp.token=''
+      JUPYTER_ENABLE_LAB: "yes"
+      RUN_MODE: local
+
+  # Optional streaming stack for kafka_and_spark_streaming.ipynb.
+  # Start with: docker compose --profile streaming up -d
+  kafka:
+    profiles: ["streaming"]
+    image: apache/kafka:latest
+    container_name: bigdata_kafka
+    ports:
+      - "9092:29092"
+    environment:
+      CLUSTER_ID: 5L6g3nShT-eMCtK--X86sw
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+volumes:
+  kafka_data:
     
