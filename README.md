@@ -1,16 +1,28 @@
 # Big Data Engineering Project
 
-This repository contains the notebooks and data files for the Vienna City Marathon big data engineering project. The instructions below explain how to run the notebooks on a new computer without including any private credentials.
+This repository contains the notebooks and data files for the Vienna City Marathon big data engineering project. The notebooks from the homeworks have been inkluded and updated. 
+
+"visualizations_for_presentation" is the only new notebook and contains a lot of graphs and tables created from the collected data, some (but not all) have been used for the presentation.
 
 ## Project Structure
 
 - `CSV/`: input and generated CSV files used by the notebooks
+- `web_scraping Group5 2017-2026`: webscrapes marathon data from 2017-2026
 - `weatherapi.ipynb`: fetches and visualizes marathon-day weather data
+- `luftquali.ipynb`: fetches and visualizes marathon-day air quality data
 - `visualizations_for_presentation.ipynb`: presentation-ready plots and summary tables
 - `spark.ipynb`: Spark notebook
 - `kafka_and_spark_streaming.ipynb`: Kafka and Spark streaming notebook
 - `kafka_and_spark_streaming.local.example.json`: template for local/private streaming configuration
 - `docker-compose.yml`: Docker setup for Spark/Jupyter and optional Kafka
+
+## Data Files
+
+The notebooks expect the CSV files to be available in the `CSV/` folder. Important files include:
+
+- `CSV/vienna_city_marathon_all_years_participants.csv`
+- `CSV/weather.csv`
+- `CSV/vienna_marathon_component_trends.csv`
 
 ## Recommended Setup: Docker
 
@@ -22,7 +34,6 @@ Install:
 
 - Docker Desktop or Docker Engine
 - Docker Compose
-- Git, if the project is cloned from a repository
 
 Check that Docker works:
 
@@ -45,29 +56,7 @@ Open Jupyter Lab in the browser at:
 http://localhost:8888
 ```
 
-If Jupyter prints a token URL in the terminal, use that URL to open the notebook environment.
-
-The full project folder is mounted inside the container at:
-
-```text
-/home/jovyan/work
-```
-
-CSV files are available inside Docker at:
-
-```text
-/home/jovyan/work/CSV
-```
-
 ### 3. Run the Spark Notebook
-
-In Jupyter Lab, open:
-
-```text
-spark.ipynb
-```
-
-Run the notebook cells from top to bottom.
 
 While Spark jobs are running, the Spark UI is available at:
 
@@ -119,45 +108,6 @@ docker compose down -v
 
 The analysis and visualization notebooks can also be run with a local Python environment.
 
-### 1. Create a Virtual Environment
-
-From the project root folder:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-### 2. Install Python Packages
-
-Install the packages used by the notebooks:
-
-```bash
-python -m pip install --upgrade pip
-python -m pip install pandas numpy matplotlib seaborn requests python-dotenv ipykernel jupyter
-```
-
-Register the environment as a Jupyter kernel:
-
-```bash
-python -m ipykernel install --user --name bigdata-eng --display-name "Big Data Engineering"
-```
-
-### 3. Start Jupyter
-
-```bash
-jupyter lab
-```
-
-Open the project folder and select the `Big Data Engineering` kernel for the notebooks.
-
 ## Recommended Notebook Order
 
 For reviewing the project results, use this order:
@@ -182,90 +132,3 @@ For reviewing the project results, use this order:
 No access credentials are included in this repository.
 
 If a notebook requires a private API key or private cluster configuration, create a local file on your own machine. Do not commit this file.
-
-### Weather API Key
-
-`weatherapi.ipynb` reads the weather API key from an environment variable loaded via `python-dotenv`:
-
-```python
-weather_key = os.getenv("weather_key")
-```
-
-To fetch new weather data, create a local `.env` file in the project root:
-
-```text
-weather_key=YOUR_OWN_API_KEY_HERE
-```
-
-Do not share or commit the `.env` file.
-
-If `CSV/weather.csv` is already present, the visualization parts of the notebook can be run without fetching new data.
-
-### Kafka and Streaming Configuration
-
-For private Kafka or cluster settings, copy the template:
-
-```bash
-cp kafka_and_spark_streaming.local.example.json kafka_and_spark_streaming.local.json
-```
-
-Then fill in the local file on your own machine. Keep secrets out of Git.
-
-For the provided Docker setup, the streaming notebook defaults to local mode and can run without a private config file.
-
-## Data Files
-
-The notebooks expect the CSV files to be available in the `CSV/` folder. Important files include:
-
-- `CSV/vienna_city_marathon_all_years_participants.csv`
-- `CSV/weather.csv`
-- `CSV/vie_weather.csv`
-- `CSV/vienna_marathon_component_trends.csv`
-
-If a notebook cannot find a CSV file, check that it is being run from the project root or through the Docker container at `/home/jovyan/work`.
-
-## Troubleshooting
-
-### Jupyter Cannot Find Files
-
-Make sure the current working directory is the project root. In a notebook cell, check:
-
-```python
-from pathlib import Path
-Path.cwd()
-```
-
-The folder shown should contain the `CSV/` directory.
-
-### Port Already in Use
-
-If `localhost:8888`, `localhost:4040`, or `localhost:9092` is already in use, stop the process using that port or change the port mapping in `docker-compose.yml`.
-
-### Missing Python Package
-
-Install the missing package in the active environment, for example:
-
-```bash
-python -m pip install package-name
-```
-
-Inside a notebook, use:
-
-```python
-%pip install package-name
-```
-
-### Docker Containers Do Not Start Cleanly
-
-Stop all project containers and start again:
-
-```bash
-docker compose down
-docker compose up spark
-```
-
-For Kafka state issues, remove the Kafka volume:
-
-```bash
-docker compose down -v
-```
